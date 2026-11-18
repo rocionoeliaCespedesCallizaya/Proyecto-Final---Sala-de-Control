@@ -4,7 +4,7 @@ Integrantes del Grupo:
 -	Clavijo Mamani Yasmin
 -	Quispe Mamani Leidy Marian
   
-Enlace de la página publicada: 
+Enlace de la página publicada: https://rocionoeliacespedescallizaya.github.io/Proyecto-Final---Sala-de-Control/
 
 Enlace del repositorio Git: https://github.com/rocionoeliaCespedesCallizaya/Proyecto-Final---Sala-de-Control.git
 
