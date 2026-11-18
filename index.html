@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulador educativo de prevención y monitoreo de transporte por cable.">
+  <title>SIMTELE-WEB | Sala de control</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+
+  <!-- MODAL / PANTALLA DE AUTENTICACIÓN (LOGIN / REGISTRO / RECUPERACIÓN) -->
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="brand-icon auth-logo">ST</div>
+      <h2 id="authTitle">Iniciar Sesión</h2>
+      <p id="authSubtitle">Sala de Control · Mi Teleférico</p>
+
+      <!-- FORMULARIO DE INICIO DE SESIÓN -->
+      <form id="formLogin" class="auth-form">
+        <label for="loginUser">Usuario o Correo</label>
+        <input id="loginUser" type="text" placeholder="Ej. operador1" required>
+
+        <label for="loginPass">Contraseña</label>
+        <input id="loginPass" type="password" placeholder="••••••••" required>
+
+        <button type="submit" class="btn btn-primary auth-btn">Ingresar al Sistema</button>
+        
+        <div class="auth-links">
+          <a href="#" id="linkShowRegister">¿No tienes cuenta? Regístrate</a>
+          <a href="#" id="linkShowRecovery" class="forgot-pass">¿Olvidaste tu contraseña?</a>
+        </div>
+        <p id="msgLogin" class="form-message" role="alert"></p>
+      </form>
+
+      <!-- FORMULARIO DE REGISTRO DE USUARIO -->
+      <form id="formRegister" class="auth-form" style="display: none;">
+        <label for="regUser">Nombre de Usuario</label>
+        <input id="regUser" type="text" placeholder="Ej. operador1" required>
+
+        <label for="regEmail">Correo electrónico</label>
+        <input id="regEmail" type="email" placeholder="correo@teleferico.bo" required>
+
+        <label for="regPass">Contraseña</label>
+        <input id="regPass" type="password" placeholder="Mínimo 6 caracteres" required>
+
+        <button type="submit" class="btn btn-primary auth-btn">Registrarse</button>
+        <div class="auth-links">
+          <a href="#" id="linkBackLogin">¿Ya tienes cuenta? Inicia sesión</a>
+        </div>
+        <p id="msgRegister" class="form-message" role="alert"></p>
+      </form>
+
+      <!-- FORMULARIO DE RECUPERACIÓN / CAMBIO DE CONTRASEÑA -->
+      <form id="formRecovery" class="auth-form" style="display: none;">
+        <p class="help" style="margin-bottom: 10px;">Ingresa tu correo o usuario registrado para restablecer tu contraseña.</p>
+        
+        <label for="recUser">Usuario o Correo</label>
+        <input id="recUser" type="text" placeholder="Tu usuario o correo" required>
+
+        <label for="recNewPass">Nueva Contraseña</label>
+        <input id="recNewPass" type="password" placeholder="Nueva contraseña" required>
+
+        <button type="submit" class="btn btn-primary auth-btn">Actualizar Contraseña</button>
+        <div class="auth-links">
+          <a href="#" id="linkCancelRecovery">Cancelar / Volver al Login</a>
+        </div>
+        <p id="msgRecovery" class="form-message" role="alert"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN PRINCIPAL (Oculta hasta iniciar sesión) -->
+  <div id="appContainer" style="display: none;">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">ST</div>
+        <div>
+          <h1>SIMTELE-WEB</h1>
+          <p>Centro educativo de prevención y monitoreo</p>
+        </div>
+      </div>
+      <div class="top-status">
+        <span class="live-dot"></span>
+        <span id="userBienvenida">SESIÓN ACTIVA</span>
+        <span id="reloj" class="clock">--:--:--</span>
+        <button id="btnCerrarSesion" class="delete-btn" style="margin-left: 10px;">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a href="#inicio">Panel general</a>
+      <a href="#emergencia">Emergencia</a>
+      <a href="#mantenimiento">Mantenimiento</a>
+      <a href="#viento">Viento</a>
+      <a href="#sensores">Sensores</a>
+    </nav>
+
+    <main>
+      <section id="inicio" class="welcome">
+        <div>
+          <p class="eyebrow">SISTEMA DE MONITOREO · TRANSPORTE POR CABLE</p>
+          <h2>Sala de control <span>Mi Teleférico</span></h2>
+          <p>Panel interactivo para registrar, analizar y practicar situaciones hipotéticas de operación.</p>
+        </div>
+        <div class="simulation-label">
+          <strong>ENTORNO DIDÁCTICO</strong>
+          <small>No conectado a equipos reales</small>
+        </div>
+      </section>
+
+      <section class="overview" aria-label="Resumen de módulos">
+        <article class="summary-card">
+          <span class="summary-icon">01</span>
+          <div><p>Módulo</p><h3>Emergencia</h3><small>Cálculo de distancia</small></div>
+        </article>
+        <article class="summary-card">
+          <span class="summary-icon">02</span>
+          <div><p>Módulo</p><h3>Mantenimiento</h3><small id="totalMantenimientos">0 registros</small></div>
+        </article>
+        <article class="summary-card">
+          <span class="summary-icon">03</span>
+          <div><p>Módulo</p><h3>Viento</h3><small>5 mediciones</small></div>
+        </article>
+        <article class="summary-card">
+          <span class="summary-icon">04</span>
+          <div><p>Módulo</p><h3>Sensores</h3><small id="totalSensores">0 registros</small></div>
+        </article>
+      </section>
+
+      <section id="emergencia" class="module">
+        <div class="section-heading">
+          <div><span class="module-number">MÓDULO 01</span><h2>Detención de emergencia</h2>
+            <p>Estimación didáctica de la distancia recorrida durante el tiempo de reacción.</p></div>
+          <span class="status-pill status-blue">CÁLCULO</span>
+        </div>
+        <div class="module-grid">
+          <form id="formEmergencia" class="panel form-panel" novalidate>
+            <h3>Datos de operación simulados</h3>
+            <label for="velocidadEmergencia">Velocidad del sistema (km/h)</label>
+            <input id="velocidadEmergencia" type="number" min="0" max="120" step="any" placeholder="Ej. 72" required>
+            <small class="help">Ingrese un valor entre 0 y 120 km/h.</small>
+
+            <label for="tiempoReaccion">Tiempo de reacción (segundos)</label>
+            <input id="tiempoReaccion" type="number" min="0" max="30" step="any" placeholder="Ej. 3" required>
+            <small class="help">Ingrese un valor entre 0 y 30 segundos.</small>
+
+            <button class="btn btn-primary" type="submit">Calcular distancia</button>
+            <p id="errorEmergencia" class="form-message" role="alert"></p>
+          </form>
+          <div class="panel result-panel">
+            <div class="result-top"><span>RESULTADO DEL ANÁLISIS</span><span class="result-symbol">↗</span></div>
+            <div class="big-result"><strong id="distanciaResultado">--</strong><span>metros</span></div>
+            <p id="avisoEmergencia" class="notice">Ingrese los datos para realizar el cálculo.</p>
+            <div class="formula">
+              <strong>Fórmula utilizada</strong>
+              <code>d = (v / 3.6) × t</code>
+              <small>d: distancia (m) · v: velocidad (km/h) · t: tiempo (s)</small>
+            </div>
+            <p class="threshold-note">Umbral ficticio del ejercicio: 50 m. No representa un límite operativo real.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="mantenimiento" class="module">
+        <div class="section-heading">
+          <div><span class="module-number">MÓDULO 02</span><h2>Mantenimiento</h2>
+            <p>Registro y seguimiento de componentes del sistema.</p></div>
+          <span class="status-pill status-blue">REGISTROS</span>
+        </div>
+        <form id="formMantenimiento" class="panel maintenance-form" novalidate>
+          <div class="field">
+            <label for="componente">Componente</label>
+            <input id="componente" type="text" maxlength="60" placeholder="Ej. Motor principal" required>
+          </div>
+          <div class="field">
+            <label for="horasUso">Horas de uso</label>
+            <input id="horasUso" type="number" min="0" max="200000" step="any" placeholder="Ej. 1200" required>
+          </div>
+          <div class="field">
+            <label for="estadoMantenimiento">Estado</label>
+            <select id="estadoMantenimiento" required>
+              <option value="">Seleccione...</option>
+              <option value="Normal">Normal</option>
+              <option value="Revisión">Revisión</option>
+              <option value="Urgente">Urgente</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit">+ Agregar registro</button>
+          <p id="errorMantenimiento" class="form-message full-width" role="alert"></p>
+        </form>
+        <div class="panel table-panel">
+          <div class="table-title"><h3>Historial de componentes</h3><span id="contadorMantenimiento">0 registros</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Componente</th><th>Horas de uso</th><th>Estado</th><th>Acción</th></tr></thead>
+              <tbody id="tablaMantenimiento"><tr><td colspan="4" class="empty">Todavía no hay registros.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="viento" class="module">
+        <div class="section-heading">
+          <div><span class="module-number">MÓDULO 03</span><h2>Viento y oscilación</h2>
+            <p>Registro de cinco mediciones simuladas de intensidad del viento.</p></div>
+          <span class="status-pill status-blue">ANÁLISIS</span>
+        </div>
+        <div class="module-grid">
+          <form id="formViento" class="panel form-panel" novalidate>
+            <h3>Mediciones de viento</h3>
+            <p class="help">Registre cinco valores entre 0 y 150 km/h.</p>
+            <div class="wind-inputs">
+              <label>Medición 1 (km/h)<input class="medicion-viento" type="number" min="0" max="150" step="any" placeholder="10" required></label>
+              <label>Medición 2 (km/h)<input class="medicion-viento" type="number" min="0" max="150" step="any" placeholder="20" required></label>
+              <label>Medición 3 (km/h)<input class="medicion-viento" type="number" min="0" max="150" step="any" placeholder="30" required></label>
+              <label>Medición 4 (km/h)<input class="medicion-viento" type="number" min="0" max="150" step="any" placeholder="40" required></label>
+              <label>Medición 5 (km/h)<input class="medicion-viento" type="number" min="0" max="150" step="any" placeholder="50" required></label>
+            </div>
+            <button class="btn btn-primary" type="submit">Analizar mediciones</button>
+            <p id="errorViento" class="form-message" role="alert"></p>
+          </form>
+          <div class="panel wind-results">
+            <h3>Resumen de mediciones</h3>
+            <div class="metric-row"><span>Promedio</span><strong id="promedioViento">-- km/h</strong></div>
+            <div class="metric-row"><span>Valor máximo</span><strong id="maximoViento">-- km/h</strong></div>
+            <div class="metric-row"><span>Clasificación descriptiva</span><strong id="clasificacionViento">Pendiente</strong></div>
+            <div class="wind-scale"><span class="scale-low"></span><span class="scale-medium"></span><span class="scale-high"></span></div>
+            <p id="avisoViento" class="notice">Ingrese las cinco mediciones para obtener el análisis.</p>
+            <p class="threshold-note">Clasificación didáctica: baja (menos de 30), moderada (30 a menos de 60), alta (60 o más km/h). No son límites operativos reales.</p>
+            <p class="help">Valores ingresados: <span id="listaViento">--</span></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="sensores" class="module">
+        <div class="section-heading">
+          <div><span class="module-number">MÓDULO 04</span><h2>Sensores</h2>
+            <p>Registro de códigos y lecturas con validación de datos.</p></div>
+          <span class="status-pill status-blue">VALIDACIÓN</span>
+        </div>
+        <form id="formSensor" class="panel maintenance-form" novalidate>
+          <div class="field">
+            <label for="codigoSensor">Código del sensor</label>
+            <input id="codigoSensor" type="text" placeholder="SEN-001" maxlength="7" required>
+            <small class="help">Formato obligatorio: SEN- seguido de tres dígitos.</small>
+          </div>
+          <div class="field">
+            <label for="tipoSensor">Tipo de sensor</label>
+            <select id="tipoSensor" required>
+              <option value="">Seleccione...</option>
+              <option>Velocidad</option><option>Temperatura</option>
+              <option>Vibración</option><option>Tensión</option>
+              <option>Posición</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="lecturaSensor">Lectura numérica</label>
+            <input id="lecturaSensor" type="number" step="any" placeholder="Ej. 35.5" required>
+          </div>
+          <button class="btn btn-primary" type="submit">+ Registrar sensor</button>
+          <p id="errorSensor" class="form-message full-width" role="alert"></p>
+        </form>
+        <div class="panel table-panel">
+          <div class="table-title"><h3>Sensores registrados y válidos</h3><span id="contadorSensores">0 registros</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Tipo</th><th>Lectura</th><th>Acción</th></tr></thead>
+              <tbody id="tablaSensores"><tr><td colspan="4" class="empty">Todavía no hay sensores registrados.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>MI TELEFERICO - Sala de Control</p>
+    </footer>
+  </div>
+
+</body>
+</html>
