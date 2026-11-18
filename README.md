@@ -6,7 +6,7 @@ Integrantes del Grupo:
   
 Enlace de la página publicada: 
 
-Enlace del repositorio Git: 
+Enlace del repositorio Git: https://github.com/rocionoeliaCespedesCallizaya/Proyecto-Final---Sala-de-Control.git
 
 Fecha de entrega: 18/11/2026
 
